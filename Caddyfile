@@ -1,5 +1,23 @@
 :{$PORT:8080} {
-	root * /srv
 	encode gzip
-	file_server
+
+	# Catálogo de pedidos (sistemabebidas en Railway), servido bajo el mismo dominio
+	@tienda path /tienda /api/shop /api/shop/* /api/logo /api/branding /css/tienda.css /js/tienda.js /img/logo.jpg
+	handle @tienda {
+		reverse_proxy {$CATALOG_URL:https://sistemabebidas-production.up.railway.app} {
+			header_up Host {upstream_hostport}
+		}
+	}
+
+	# Accesos directos desde los botones de la landing
+	@mayorista path /mayorista /mayorista/
+	redir @mayorista /tienda?c={$MAYORISTA_TOKEN:yL8yIqbBYFp9V6_y} 302
+
+	@minorista path /minorista /minorista/
+	redir @minorista /tienda 302
+
+	handle {
+		root * /srv
+		file_server
+	}
 }
