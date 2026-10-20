@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ETL Bebidas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="ETL Bebidas: distribuidora de bebidas. Hacé tu pedido mayorista o minorista.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: one strong hero with the two order buttons, a running strip of brands, then a short "how to order" pair and footer */
+  :root {
+    --bg: #eef3f7;
+    --surface: #ffffff;
+    --ink: #0d2236;
+    --muted: #4f6273;
+    --line: #cfdbe5;
+    --cobalt: #1647d6;
+    --cobalt-ink: #ffffff;
+    --amber: #f2a516;
+    --amber-ink: #241500;
+    --strip: #0d2236;
+    --strip-ink: #eef3f7;
+    --wa: #1fa855;
+    --wa-ink: #ffffff;
+    --display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+    --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #08131e; --surface: #0f2133; --ink: #e8f0f6; --muted: #9db0c0; --line: #20384e;
+      --cobalt: #5b86ff; --cobalt-ink: #06112a; --amber: #f5b53a; --amber-ink: #241500;
+      --strip: #f2a516; --strip-ink: #1a1000; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #08131e; --surface: #0f2133; --ink: #e8f0f6; --muted: #9db0c0; --line: #20384e;
+    --cobalt: #5b86ff; --cobalt-ink: #06112a; --amber: #f5b53a; --amber-ink: #241500;
+    --strip: #f2a516; --strip-ink: #1a1000; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1rem;
+    line-height: 1.55;
+    overflow-x: hidden;
+  }
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  /* Top bar */
+  header .wrap {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding-block: 20px;
+  }
+  .logo {
+    font-family: var(--display); font-weight: 900; font-size: 1.6rem;
+    letter-spacing: .02em; text-transform: uppercase; line-height: 1;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .cap {
+    width: 30px; height: 30px; border-radius: 50%; flex: none;
+    background:
+      radial-gradient(circle at 50% 50%, var(--amber) 0 52%, transparent 53%),
+      repeating-conic-gradient(var(--amber) 0 10deg, transparent 10deg 20deg);
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--amber-ink) 18%, transparent);
+  }
+  .tag {
+    font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Hero */
+  .hero .wrap { padding-block: clamp(32px, 7vw, 88px) clamp(40px, 7vw, 80px); }
+  .eyebrow {
+    font-size: .8rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--cobalt); margin: 0 0 14px;
+  }
+  h1 {
+    font-family: var(--display); font-weight: 900; text-transform: uppercase;
+    font-size: clamp(3.4rem, 13vw, 9.5rem); line-height: .86; letter-spacing: -.005em;
+    margin: 0; text-wrap: balance;
+  }
+  h1 .hl { color: var(--cobalt); }
+  .lead {
+    max-width: 52ch; font-size: clamp(1.05rem, 2.2vw, 1.25rem); color: var(--muted);
+    margin: 22px 0 0;
+  }
+
+  .choices {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;
+    margin-top: clamp(28px, 5vw, 48px); max-width: 860px;
+  }
+  .btn {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 22px 24px 20px; border-radius: 14px; text-decoration: none;
+    border: 2px solid transparent;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .btn:hover { transform: translateY(-3px); }
+  .btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .btn-may { background: var(--cobalt); color: var(--cobalt-ink); box-shadow: 0 10px 28px -14px var(--cobalt); }
+  .btn-min { background: var(--amber); color: var(--amber-ink); box-shadow: 0 10px 28px -14px var(--amber); }
+  .btn-label {
+    font-family: var(--display); font-weight: 900; text-transform: uppercase;
+    font-size: clamp(2rem, 5vw, 2.8rem); line-height: 1; letter-spacing: .01em;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .arrow { font-family: var(--body); font-weight: 600; font-size: 1.6rem; transition: transform .18s ease; }
+  .btn:hover .arrow { transform: translateX(4px); }
+  .btn-sub { font-size: .95rem; font-weight: 500; opacity: .88; }
+
+  /* Brand strip */
+  .strip {
+    background: var(--strip); color: var(--strip-ink);
+    overflow: hidden; padding-block: 18px; position: relative;
+  }
+  .track {
+    display: flex; width: max-content; gap: 48px;
+    animation: slide 38s linear infinite;
+  }
+  .strip:hover .track { animation-play-state: paused; }
+  .track span {
+    font-family: var(--display); font-weight: 800; text-transform: uppercase;
+    font-size: clamp(1.4rem, 3.4vw, 2rem); letter-spacing: .03em; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 48px;
+  }
+  .track span::after { content: "●"; font-size: .5em; opacity: .5; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  /* Categories + how to order */
+  section.info .wrap { padding-block: clamp(48px, 8vw, 96px); display: grid; gap: clamp(40px, 6vw, 64px); }
+  h2 {
+    font-family: var(--display); font-weight: 800; text-transform: uppercase;
+    font-size: clamp(2rem, 5vw, 3rem); line-height: 1; margin: 0 0 18px; text-wrap: balance;
+  }
+  .cats { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 0; list-style: none; }
+  .cats li {
+    border: 1.5px solid var(--line); background: var(--surface);
+    padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: .95rem;
+  }
+
+  .modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .mode {
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px;
+    padding: 24px; display: flex; flex-direction: column; gap: 12px; min-width: 0;
+  }
+  .mode h3 {
+    font-family: var(--display); font-weight: 800; text-transform: uppercase;
+    font-size: 1.7rem; line-height: 1; margin: 0; display: flex; align-items: center; gap: 10px;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; flex: none; }
+  .mode ul { margin: 0; padding-left: 1.1em; color: var(--muted); display: grid; gap: 6px; }
+  .mode a {
+    margin-top: auto; align-self: flex-start; font-weight: 700; color: var(--cobalt);
+    text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 1px;
+  }
+  .mode a:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+  /* Contact */
+  .contact .wrap { padding-block: 0 clamp(48px, 8vw, 96px); }
+  .contact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .c-card {
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: 14px;
+    padding: 22px 24px; display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  }
+  .c-label { font-size: .75rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .c-value { font-family: var(--display); font-weight: 800; font-size: 1.6rem; line-height: 1.1; overflow-wrap: anywhere; user-select: all; }
+  .c-text { color: var(--muted); margin: 0; font-size: .95rem; }
+  .c-action {
+    margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: 999px; font-weight: 700; font-size: .95rem; text-decoration: none;
+    border: 0; cursor: pointer; font-family: var(--body);
+  }
+  .c-action:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .c-wa { background: var(--wa); color: var(--wa-ink); }
+  .c-plain { background: var(--bg); color: var(--ink); border: 1.5px solid var(--line); }
+  .c-action svg { width: 18px; height: 18px; flex: none; fill: currentColor; }
+
+  .wa-float {
+    position: fixed; z-index: 20;
+    right: calc(18px + env(safe-area-inset-right, 0px));
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--wa); color: var(--wa-ink);
+    display: grid; place-items: center;
+    box-shadow: 0 10px 24px -8px rgba(0,0,0,.45);
+    transition: transform .18s ease;
+  }
+  .wa-float:hover { transform: scale(1.07); }
+  .wa-float:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .wa-float svg { width: 32px; height: 32px; fill: currentColor; }
+
+  footer { border-top: 1.5px solid var(--line); }
+  footer .wrap { padding-bottom: 96px; }
+  footer .wrap {
+    padding-block: 24px; display: flex; flex-wrap: wrap; gap: 8px 24px;
+    justify-content: space-between; color: var(--muted); font-size: .9rem;
+  }
+
+  @media (max-width: 640px) {
+    .choices, .modes, .contact-grid { grid-template-columns: 1fr; }
+    .tag { display: none; }
+  }
+  @media (max-width: 900px) and (min-width: 641px) {
+    .contact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track { animation: none; }
+    .btn, .arrow, .wa-float { transition: none; }
+  }
+</style>
+<style>
+  :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; -webkit-font-smoothing: antialiased; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="logo"><span class="cap" aria-hidden="true"></span>ETL Bebidas</div>
+    <div class="tag">Distribuidora de bebidas</div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Pedidos online</p>
+      <h1>Bebidas<br>para tu <span class="hl">negocio</span><br>y tu casa</h1>
+      <p class="lead">Cervezas, vinos, champagne, whisky, aperitivos, bebidas blancas y energizantes de las marcas que más se venden. Elegí cómo comprás y armá tu pedido desde el catálogo.</p>
+
+      <div class="choices">
+        <a class="btn btn-may" id="btn-mayorista" data-link="mayorista" href="#" target="_blank" rel="noopener">
+          <span class="btn-label">Mayorista <span class="arrow" aria-hidden="true">→</span></span>
+          <span class="btn-sub">Distribuidores y revendedores. Compra por pallet.</span>
+        </a>
+        <a class="btn btn-min" id="btn-minorista" data-link="minorista" href="#" target="_blank" rel="noopener">
+          <span class="btn-label">Minorista <span class="arrow" aria-hidden="true">→</span></span>
+          <span class="btn-sub">Kioscos, vinotecas, restaurantes y minimercados. Compra por bulto.</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip" aria-label="Marcas que distribuimos">
+    <div class="track" id="track"></div>
+  </div>
+
+  <section class="info">
+    <div class="wrap">
+      <div>
+        <h2>Qué vas a encontrar</h2>
+        <ul class="cats">
+          <li>Cervezas</li><li>Energizantes</li><li>Aperitivos</li><li>Bebidas blancas</li><li>Vinos</li><li>Whisky</li><li>Champagne</li><li>Importados</li>
+        </ul>
+      </div>
+
+      <div>
+        <h2>¿Cómo comprás?</h2>
+        <div class="modes">
+          <div class="mode">
+            <h3><span class="dot" style="background:var(--cobalt)"></span>Mayorista</h3>
+            <ul>
+              <li>Para distribuidores y revendedores</li>
+              <li>Compra por pallet completo</li>
+              <li>Compra mínima: $2.000.000</li>
+            </ul>
+            <a href="#" data-link="mayorista" target="_blank" rel="noopener">Ver catálogo mayorista</a>
+          </div>
+          <div class="mode">
+            <h3><span class="dot" style="background:var(--amber)"></span>Minorista</h3>
+            <ul>
+              <li>Para kioscos, vinotecas, restaurantes y minimercados</li>
+              <li>Compra por bulto cerrado</li>
+              <li>Compra mínima: $300.000</li>
+            </ul>
+            <a href="#" data-link="minorista" target="_blank" rel="noopener">Ver catálogo minorista</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contacto">
+    <div class="wrap">
+      <h2>Contacto</h2>
+      <div class="contact-grid">
+        <div class="c-card">
+          <span class="c-label">WhatsApp</span>
+          <span class="c-value">+54 9 351 591-8555</span>
+          <p class="c-text">Consultas, precios y pedidos.</p>
+          <a class="c-action c-wa" href="https://wa.me/5493515918555?text=Hola%20ETL%20Bebidas%2C%20quiero%20hacer%20una%20consulta" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#wa-icon"/></svg>Escribinos</a>
+        </div>
+        <div class="c-card">
+          <span class="c-label">Canal de WhatsApp</span>
+          <span class="c-value">Ofertas e ingresos</span>
+          <p class="c-text">Seguí el canal y enterate primero de las promos y la mercadería nueva.</p>
+          <a class="c-action c-wa" href="https://whatsapp.com/channel/0029VbDznvy8qIzme5zSif1O" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#wa-icon"/></svg>Seguir el canal</a>
+        </div>
+        <div class="c-card">
+          <span class="c-label">Mail</span>
+          <span class="c-value" id="mail">ventas@etlbebidas.com.ar</span>
+          <p class="c-text">Para cotizaciones y alta de clientes mayoristas.</p>
+          <button class="c-action c-plain" id="copy-mail" type="button">Copiar mail</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="wa-icon" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.23 8.23 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.55-3.7 8.24-8.24 8.24Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z"/></symbol>
+</svg>
+
+<a class="wa-float" href="https://wa.me/5493515918555?text=Hola%20ETL%20Bebidas%2C%20quiero%20hacer%20una%20consulta" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#wa-icon"/></svg></a>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="year">2026</span> ETL Bebidas</span>
+    <span>Venta de alcohol solo a mayores de 18 años. Beber con moderación.</span>
+  </div>
+</footer>
+
+<script>
+  // ==== EDITÁ ACÁ ====
+  // Links a los catálogos de pedidos
+  const LINKS = {
+    mayorista: "#",
+    minorista: "#"
+  };
+  // Marcas que aparecen en la franja
+  const MARCAS = [
+    "Fernet Branca", "Brahma", "Red Bull", "Jägermeister", "Monster"
+  ];
+  // ===================
+
+  document.querySelectorAll("[data-link]").forEach(a => {
+    a.href = LINKS[a.dataset.link] || "#";
+  });
+
+  const track = document.getElementById("track");
+  // Repeat the list so one half fills wide screens, then two halves so the strip loops seamlessly
+  const half = [];
+  while (half.length < 12) half.push(...MARCAS);
+  [...half, ...half].forEach((m, i) => {
+    const s = document.createElement("span");
+    s.textContent = m;
+    if (i >= MARCAS.length) s.setAttribute("aria-hidden", "true");
+    track.appendChild(s);
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const copyBtn = document.getElementById("copy-mail");
+  copyBtn.addEventListener("click", () => {
+    const mail = document.getElementById("mail");
+    const done = () => { copyBtn.textContent = "Mail copiado"; setTimeout(() => copyBtn.textContent = "Copiar mail", 2000); };
+    const fallback = () => {
+      const r = document.createRange(); r.selectNodeContents(mail);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      copyBtn.textContent = "Seleccionado, copialo";
+    };
+    try { navigator.clipboard.writeText(mail.textContent).then(done, fallback); } catch (e) { fallback(); }
+  });
+</script>
+</body>
+</html>
