@@ -119,6 +119,39 @@
   .btn:hover .arrow { transform: translateX(4px); }
   .btn-sub { font-size: .95rem; font-weight: 500; opacity: .88; }
 
+  /* Channel call-to-action */
+  .head-right { display: flex; align-items: center; gap: 16px; }
+  .head-canal {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    background: var(--wa); color: var(--wa-ink); font-weight: 700; font-size: .85rem;
+    padding: 8px 14px; border-radius: 999px;
+  }
+  .head-canal svg { width: 16px; height: 16px; fill: currentColor; }
+  .head-canal:focus-visible, .canal-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+  .canal {
+    margin-top: 16px; max-width: 860px;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+    padding: 18px 20px; border-radius: 14px;
+    background: color-mix(in srgb, var(--wa) 10%, var(--surface));
+    border: 1.5px solid color-mix(in srgb, var(--wa) 45%, transparent);
+  }
+  .canal-icon {
+    width: 48px; height: 48px; border-radius: 50%; flex: none;
+    background: var(--wa); color: var(--wa-ink); display: grid; place-items: center;
+  }
+  .canal-icon svg { width: 26px; height: 26px; fill: currentColor; }
+  .canal-text { flex: 1 1 260px; min-width: 0; }
+  .canal-text b { display: block; font-size: 1.05rem; }
+  .canal-text span { color: var(--muted); font-size: .95rem; }
+  .canal-btn {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    background: var(--wa); color: var(--wa-ink); font-weight: 700;
+    padding: 12px 18px; border-radius: 999px; white-space: nowrap;
+    transition: transform .18s ease;
+  }
+  .canal-btn:hover { transform: translateY(-2px); }
+
   /* Brand strip */
   .strip {
     background: var(--strip); color: var(--strip-ink);
@@ -230,7 +263,10 @@
 <header>
   <div class="wrap">
     <div class="logo"><span class="cap" aria-hidden="true"></span>ETL Bebidas</div>
-    <div class="tag">Distribuidora de bebidas</div>
+    <div class="head-right">
+      <div class="tag">Distribuidora de bebidas</div>
+      <a class="head-canal" href="https://whatsapp.com/channel/0029VbDznvy8qIzme5zSif1O" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#wa-icon"/></svg>Canal de ofertas</a>
+    </div>
   </div>
 </header>
 
@@ -250,6 +286,15 @@
           <span class="btn-label">Minorista <span class="arrow" aria-hidden="true">→</span></span>
           <span class="btn-sub">Kioscos, vinotecas, restaurantes y minimercados. Compra por bulto.</span>
         </a>
+      </div>
+
+      <div class="canal">
+        <span class="canal-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#wa-icon"/></svg></span>
+        <div class="canal-text">
+          <b>Sumate al canal de ETL Bebidas</b>
+          <span>Ofertas, ingresos de mercadería y novedades. Enterate primero por WhatsApp.</span>
+        </div>
+        <a class="canal-btn" href="https://whatsapp.com/channel/0029VbDznvy8qIzme5zSif1O" target="_blank" rel="noopener">Unirme al canal <span aria-hidden="true">→</span></a>
       </div>
     </div>
   </section>
